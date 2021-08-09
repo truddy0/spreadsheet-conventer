@@ -1,5 +1,6 @@
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -68,10 +69,9 @@ public class Main {
 
         // name -> city, area
         Map<String, List<String>> relatedInfoMap = new HashMap<>();
-        //name -> day, hours
+        // name -> day, hours
         Map<String, List<Map<String, String>>> mappingInfoMap = new HashMap<>();
 
-        //rows: number of rows without column header
         int rows = sheet1.getPhysicalNumberOfRows();
         for (int i = 1; i < rows; i++) {
             Row eachRow = sheet1.getRow(i);
@@ -79,13 +79,13 @@ public class Main {
             if (!relatedInfoMap.containsKey(keyValue)) {
                 List<String> relatedInfo = new ArrayList<>();
                 for (int j = 0; j < relatedColumns.length; j++) {
-                    relatedInfo.add(eachRow.getCell(relatedColumns[j]).getStringCellValue());
+                    relatedInfo.add(getValue(eachRow, relatedColumns[j]));
                 }
                 relatedInfoMap.put(keyValue, relatedInfo);
             }
 
-            String indexCol = eachRow.getCell(index).getStringCellValue();
-            String valueRow = String.valueOf(eachRow.getCell(value).getNumericCellValue());
+            String indexCol = getValue(eachRow, index);
+            String valueRow = getValue(eachRow, value);
             Map<String, String> map = new HashMap<>();
             map.put(indexCol, valueRow);
             List<Map<String, String>> temp;
@@ -210,6 +210,18 @@ public class Main {
 
         for (Object o : headers) {
             System.out.println(o);
+        }
+    }
+
+
+    private static String getValue(Row eachRow, int i) {
+        CellType type =  eachRow.getCell(i).getCellType();
+        if (type.equals(CellType.NUMERIC)) {
+            return String.valueOf(eachRow.getCell(i).getNumericCellValue());
+        } else if (type.equals(CellType.BOOLEAN)) {
+            return String.valueOf(eachRow.getCell(i).getBooleanCellValue());
+        } else {
+            return eachRow.getCell(i).getStringCellValue();
         }
     }
 
