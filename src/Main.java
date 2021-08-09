@@ -141,21 +141,9 @@ public class Main {
                     System.out.println(l.get(k));
                 }
             }
-            int t = 0;
-            while (t < relatedHeaders.length + valuesHeaders.size()) {
-                if (t >= 0 && t < relatedHeaders.length) {
-                    while (t < relatedHeaders.length) {
-                        newRows[z][t] = col2s[t];
-                        t++;
-                    }
-                } else {
-                    while (t < valuesHeaders.size() + relatedHeaders.length) {
-                        newRows[z][t] = col3s[t - relatedHeaders.length];
-                        t++;
-                    }
-                }
 
-            }
+            System.arraycopy(col2s, 0, newRows[z], 0, col2s.length);
+            System.arraycopy(col3s, 0, newRows[z], col2s.length, col3s.length);
             z++;
         }
 
@@ -167,7 +155,6 @@ public class Main {
             }
             System.out.println("==========");
         }
-
 
 
         // write to new file
@@ -190,7 +177,7 @@ public class Main {
             Object[] objects = new Object[headers.length];
             objects[0] = col1s[u - 2];
             for (int r = 0; r < newRows[0].length; r++) {
-                objects[r + 1] = newRows[u-2][r];
+                objects[r + 1] = newRows[u - 2][r];
             }
             data.put(String.valueOf(u), objects);
         }
@@ -198,31 +185,26 @@ public class Main {
 
         Set<String> keyset = data.keySet();
         int rownum = 0;
-        for (String key : keyset)
-        {
+        for (String key : keyset) {
             Row newRow = newSheet.createRow(rownum++);
-            Object [] objArr = data.get(key);
+            Object[] objArr = data.get(key);
             int cellnum = 0;
-            for (Object obj : objArr)
-            {
+            for (Object obj : objArr) {
                 Cell cell = newRow.createCell(cellnum++);
-                if(obj instanceof String)
-                    cell.setCellValue((String)obj);
-                else if(obj instanceof Integer)
-                    cell.setCellValue((Integer)obj);
+                if (obj instanceof String)
+                    cell.setCellValue((String) obj);
+                else if (obj instanceof Integer)
+                    cell.setCellValue((Integer) obj);
             }
         }
 
-        try
-        {
+        try {
             //Write the workbook in file system
             FileOutputStream out = new FileOutputStream(new File(s5));
             wb.write(out);
             out.close();
-            System.out.println("howtodoinjava_demo.xlsx written successfully on disk.");
-        }
-        catch (Exception e)
-        {
+            System.out.println(s5 + " written successfully on disk.");
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
